@@ -10,19 +10,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 
-<script>
-window.__TWEAKS = {
-  "palette": "sage",
-  "heroWord": "INTELLIGENCE",
-  "showOrb": true,
-  "grainStrength": 0.9,
-  "cursorFollower": true
-};
-</script>
-
 <style>
 :root {
-  /* sage — washed green paper */
   --bg:       oklch(0.945 0.018 130);
   --bg-deep:  oklch(0.905 0.022 132);
   --ink:      oklch(0.28 0.028 145);
@@ -33,47 +22,21 @@ window.__TWEAKS = {
   --orb-a:    oklch(0.80 0.035 138);
   --orb-b:    oklch(0.62 0.045 145);
   --orb-c:    oklch(0.40 0.038 150);
-}
-[data-palette="moss"]{
-  --bg:       oklch(0.92 0.022 145);
-  --bg-deep:  oklch(0.875 0.028 148);
-  --ink:      oklch(0.24 0.032 150);
-  --ink-soft: oklch(0.38 0.032 148);
-  --ink-mute: oklch(0.55 0.028 145);
-  --line:     oklch(0.75 0.028 148);
-  --accent:   oklch(0.46 0.06 150);
-  --orb-a:    oklch(0.77 0.04 145);
-  --orb-b:    oklch(0.55 0.055 150);
-  --orb-c:    oklch(0.34 0.04 155);
-}
-[data-palette="olive"]{
-  --bg:       oklch(0.93 0.028 110);
-  --bg-deep:  oklch(0.885 0.032 112);
-  --ink:      oklch(0.28 0.035 115);
-  --ink-soft: oklch(0.42 0.035 113);
-  --ink-mute: oklch(0.58 0.03 112);
-  --line:     oklch(0.76 0.03 112);
-  --accent:   oklch(0.5 0.07 110);
-  --orb-a:    oklch(0.78 0.045 112);
-  --orb-b:    oklch(0.58 0.055 110);
-  --orb-c:    oklch(0.36 0.045 115);
+  --grain:    0.9;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#000;color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-feature-settings:"ss01","cv11";-webkit-font-smoothing:antialiased}
+html,body{background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-feature-settings:"ss01","cv11";-webkit-font-smoothing:antialiased}
 body{overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 
 .stage{
   position:relative;
   background:var(--bg);
-  margin: 32px auto;
-  max-width: 1400px;
-  min-height: calc(100vh - 64px);
+  width: 100%;
+  min-height: 100vh;
   overflow:hidden;
-  box-shadow: 0 30px 120px -40px rgba(0,0,0,0.55);
 }
-@media (max-width: 900px){ .stage{ margin:0; } }
 
 .serif{font-family:'Cormorant Garamond',serif;font-weight:400;letter-spacing:-0.01em}
 .mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-soft)}
@@ -84,17 +47,6 @@ a{color:inherit;text-decoration:none}
   opacity: var(--grain, .35);
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.2  0 0 0 0 0.22  0 0 0 0 0.18  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
-
-.cursor{
-  position:fixed;pointer-events:none;z-index:200;
-  width:10px;height:10px;border-radius:50%;
-  background:var(--ink);
-  mix-blend-mode:multiply;
-  transform:translate(-50%,-50%);
-  transition:width .3s, height .3s, background .3s;
-}
-.cursor.grow{width:56px;height:56px;background:var(--accent);opacity:.35}
-@media (hover: none){ .cursor{ display:none !important } }
 
 .topbar{
   display:flex;justify-content:space-between;align-items:center;
@@ -113,7 +65,7 @@ a{color:inherit;text-decoration:none}
 }
 
 .hero{
-  position:relative; padding: 40px 48px 80px; min-height: 82vh;
+  position:relative; padding: 40px 48px 80px; min-height: 92vh;
   display:grid; grid-template-rows: 1fr auto; gap:40px;
   overflow:hidden;
 }
@@ -130,7 +82,7 @@ a{color:inherit;text-decoration:none}
 
 .orb-wrap{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  width: min(62vw, 760px); height: min(62vw, 760px);
+  width: min(52vw, 720px); height: min(52vw, 720px);
   z-index:2; pointer-events:none;
 }
 .orb{ width:100%; height:100%; }
@@ -295,39 +247,14 @@ footer{
   position:relative; width:1px; margin:0 auto; height:60%; background:var(--line);
 }
 .progress-fill{ position:absolute; left:-1px; top:0; width:3px; height:0; background:var(--ink); transition: height .1s linear }
-.progress-label{
-  position:absolute; right:0; top:50%; transform: translate(-6px, -50%) rotate(-90deg); transform-origin: right center;
-  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; color:var(--ink-mute); white-space:nowrap;
-}
 
 .reveal{ opacity:0; transform: translateY(24px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1) }
 .reveal.in{ opacity:1; transform:none }
 
-.tweaks{
-  position:fixed; right:20px; bottom:20px; z-index:300;
-  background:var(--bg); border:1px solid var(--line); padding: 18px; min-width: 280px;
-  box-shadow: 0 20px 60px -20px rgba(0,0,0,.4);
-  display:none; flex-direction:column; gap:14px;
-  font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink);
-}
-.tweaks.on{ display:flex }
-.tweaks h4{ font-family:'Cormorant Garamond',serif; font-weight:400; font-size:22px; font-style:italic; letter-spacing:-0.01em; text-transform:none; display:flex; justify-content:space-between; align-items:center }
-.tweaks h4 .hint{ font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.14em; color:var(--ink-mute); text-transform:uppercase; font-style:normal }
-.tweaks .row{ display:flex; justify-content:space-between; align-items:center; gap:12px }
-.tweaks .row label{ font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-mute) }
-.tweaks select, .tweaks input[type="text"]{
-  background:transparent; border:1px solid var(--line); padding:6px 8px; font-family:inherit; font-size:11px; color:var(--ink); border-radius:0;
-}
-.tweaks input[type="checkbox"]{ accent-color: var(--accent) }
-.tweaks input[type="range"]{ width: 120px; accent-color: var(--accent) }
-.tweaks .swatches{ display:flex; gap:6px }
-.tweaks .sw{ width:22px; height:22px; border:1px solid var(--line); cursor:pointer; border-radius:50%; }
-.tweaks .sw.on{ outline:1px solid var(--ink); outline-offset:2px }
-
 @media (max-width: 900px){
   .topbar{ padding: 18px 20px }
   .topbar nav{ display:none }
-  .hero{ padding: 20px 20px 60px; min-height: 90vh }
+  .hero{ padding: 20px 20px 60px; min-height: 94vh }
   .meta-tl, .meta-tr{ top: 80px }
   .meta-tl{ left: 20px } .meta-tr{ right: 20px }
   .meta-bl{ left: 20px; bottom: 24px } .meta-br{ right:20px; bottom:24px }
@@ -345,7 +272,6 @@ footer{
 <body>
 
 <div class="grain" id="grain"></div>
-<div class="cursor" id="cursor"></div>
 
 <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="pfill"></div></div></div>
 
@@ -548,34 +474,6 @@ footer{
 
 </div>
 
-<div class="tweaks" id="tweaks">
-  <h4>Tweaks <span class="hint">press T</span></h4>
-  <div class="row">
-    <label>Palette</label>
-    <div class="swatches" id="swatches">
-      <div class="sw" data-p="sage" style="background:oklch(0.8 0.035 138)"></div>
-      <div class="sw" data-p="moss" style="background:oklch(0.72 0.05 148)"></div>
-      <div class="sw" data-p="olive" style="background:oklch(0.76 0.05 112)"></div>
-    </div>
-  </div>
-  <div class="row">
-    <label>Hero word</label>
-    <input type="text" id="twHero" maxlength="18"/>
-  </div>
-  <div class="row">
-    <label>Show orb</label>
-    <input type="checkbox" id="twOrb"/>
-  </div>
-  <div class="row">
-    <label>Grain</label>
-    <input type="range" id="twGrain" min="0" max="0.9" step="0.05"/>
-  </div>
-  <div class="row">
-    <label>Cursor follower</label>
-    <input type="checkbox" id="twCursor"/>
-  </div>
-</div>
-
 <script>
 (function(){
   const rings = document.getElementById('orbRings');
@@ -603,26 +501,7 @@ footer{
   folds.innerHTML = f;
 })();
 
-const stage = document.getElementById('stage');
-const cursor = document.getElementById('cursor');
 const pfill = document.getElementById('pfill');
-
-let cursorOn = window.__TWEAKS.cursorFollower;
-function setCursor(on){
-  cursorOn = on;
-  cursor.style.display = on ? 'block' : 'none';
-}
-setCursor(cursorOn);
-document.addEventListener('mousemove', e => {
-  if (!cursorOn) return;
-  cursor.style.left = e.clientX + 'px';
-  cursor.style.top  = e.clientY + 'px';
-});
-document.querySelectorAll('a, .project, .sw, input, select').forEach(el => {
-  el.addEventListener('mouseenter', ()=>cursor.classList.add('grow'));
-  el.addEventListener('mouseleave', ()=>cursor.classList.remove('grow'));
-});
-
 function onScroll(){
   const h = document.documentElement.scrollHeight - window.innerHeight;
   const p = Math.max(0, Math.min(1, window.scrollY / h));
@@ -759,61 +638,9 @@ function renderProjects(){
   list.querySelectorAll('.project').forEach(el => {
     el.addEventListener('click', () => el.classList.toggle('open'));
     io.observe(el);
-    el.addEventListener('mouseenter', ()=>cursor.classList.add('grow'));
-    el.addEventListener('mouseleave', ()=>cursor.classList.remove('grow'));
   });
 }
 renderProjects();
-
-const T = window.__TWEAKS;
-const panel = document.getElementById('tweaks');
-const swatches = document.getElementById('swatches');
-const twHero = document.getElementById('twHero');
-const twOrb = document.getElementById('twOrb');
-const twGrain = document.getElementById('twGrain');
-const twCursor = document.getElementById('twCursor');
-
-function applyTweaks(){
-  stage.setAttribute('data-palette', T.palette);
-  document.getElementById('heroWord').textContent = T.heroWord;
-  document.getElementById('orbWrap').style.display = T.showOrb ? 'block' : 'none';
-  document.documentElement.style.setProperty('--grain', T.grainStrength);
-  setCursor(T.cursorFollower);
-  [...swatches.children].forEach(c => c.classList.toggle('on', c.dataset.p === T.palette));
-  twHero.value = T.heroWord;
-  twOrb.checked = T.showOrb;
-  twGrain.value = T.grainStrength;
-  twCursor.checked = T.cursorFollower;
-  document.querySelectorAll('.hero-title span').forEach(splitLetters);
-}
-applyTweaks();
-
-function persist(edits){
-  Object.assign(T, edits);
-  applyTweaks();
-}
-
-swatches.addEventListener('click', e => {
-  const sw = e.target.closest('.sw'); if (!sw) return;
-  persist({ palette: sw.dataset.p });
-});
-twHero.addEventListener('input', e => {
-  const v = e.target.value.toUpperCase() || 'INTELLIGENCE';
-  T.heroWord = v;
-  document.getElementById('heroWord').textContent = v;
-  document.querySelectorAll('.hero-title span').forEach(splitLetters);
-});
-twOrb.addEventListener('change', e => persist({ showOrb: e.target.checked }));
-twGrain.addEventListener('input', e => persist({ grainStrength: parseFloat(e.target.value) }));
-twCursor.addEventListener('change', e => persist({ cursorFollower: e.target.checked }));
-
-document.addEventListener('keydown', e => {
-  if (e.key === 't' || e.key === 'T'){
-    const tag = (e.target && e.target.tagName) || '';
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-    panel.classList.toggle('on');
-  }
-});
 </script>
 
 </body>
