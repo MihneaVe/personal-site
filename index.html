@@ -30,38 +30,60 @@ html,body{background:var(--bg);color:var(--ink);font-family:'Instrument Sans',sy
 body{overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 
-/* custom cursor — hide OS cursor on desktop */
+/* custom cursor — hide OS cursor everywhere on desktop */
 @media (hover: hover) and (pointer: fine){
-  html, body, a, button, input, textarea, select, .project, .sw, label { cursor: none; }
+  *, *::before, *::after { cursor: none !important; }
 }
 .cursor{
-  position:fixed;left:0;top:0;pointer-events:none;z-index:200;
-  width:10px;height:10px;border-radius:50%;
+  position:fixed;left:0;top:0;pointer-events:none;z-index:201;
+  width:8px;height:8px;border-radius:50%;
   background:var(--ink);
   mix-blend-mode:multiply;
   transform:translate(-50%,-50%);
-  transition: width .3s cubic-bezier(.77,0,.18,1), height .3s cubic-bezier(.77,0,.18,1), background .3s, border .3s, opacity .25s;
+  transition: width .3s cubic-bezier(.77,0,.18,1), height .3s cubic-bezier(.77,0,.18,1), background .3s, opacity .25s, border-radius .3s;
   opacity:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0;color:transparent;letter-spacing:0;text-transform:uppercase;font-weight:500;
+  overflow:hidden;
 }
 .cursor.ready{ opacity:1 }
-.cursor.grow{
-  width:56px;height:56px;background:transparent;
-  border:1px solid var(--ink);
+/* link / nav / channel state — accent filled disc with arrow */
+.cursor.link{
+  width:44px;height:44px;
+  background:var(--accent);
   mix-blend-mode:normal;
-  opacity:.55;
+  opacity:1;color:var(--bg);font-size:14px;
+}
+/* project state — label chip */
+.cursor.project{
+  width:72px;height:72px;border-radius:999px;
+  background:var(--ink);
+  mix-blend-mode:normal;
+  opacity:1;color:var(--bg);font-size:9px;letter-spacing:.18em;
+}
+/* text state — thin vertical bar */
+.cursor.text{
+  width:2px;height:26px;border-radius:1px;
+  mix-blend-mode:multiply;opacity:.7;
 }
 .cursor-ring{
-  position:fixed;left:0;top:0;pointer-events:none;z-index:199;
-  width:40px;height:40px;border-radius:50%;
+  position:fixed;left:0;top:0;pointer-events:none;z-index:200;
+  width:36px;height:36px;border-radius:50%;
   border:1px solid var(--ink-soft);
   transform:translate(-50%,-50%);
   opacity:0;
-  transition: width .35s cubic-bezier(.77,0,.18,1), height .35s cubic-bezier(.77,0,.18,1), opacity .25s, border-color .3s;
+  transition: width .35s cubic-bezier(.77,0,.18,1), height .35s cubic-bezier(.77,0,.18,1), opacity .25s, border-color .3s, border-width .3s;
 }
-.cursor-ring.ready{ opacity:.5 }
-.cursor-ring.grow{ width:72px;height:72px;border-color:var(--accent);opacity:.7 }
+.cursor-ring.ready{ opacity:.55 }
+.cursor-ring.link{ width:84px;height:84px;border-color:var(--accent);opacity:.9 }
+.cursor-ring.project{ width:110px;height:110px;border-color:var(--ink);opacity:.3 }
+.cursor-ring.text{ opacity:0 }
 @media (hover: none), (pointer: coarse){
   .cursor, .cursor-ring{ display:none !important }
+  *, *::before, *::after { cursor: auto !important }
+  a, button, .project, .sw, label, input[type=checkbox], input[type=range], input[type=submit] { cursor: pointer !important }
+  input[type=text], textarea { cursor: text !important }
 }
 
 .stage{
@@ -675,18 +697,31 @@ if (hasFinePointer){
     cursorRing.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
     requestAnimationFrame(ringTick);
   })();
-  const bindHover = (el) => {
-    el.addEventListener('mouseenter', () => {
-      cursorEl.classList.add('grow');
-      cursorRing.classList.add('grow');
+
+  const MODES = ['link','project','text'];
+  function setMode(mode, label){
+    MODES.forEach(m => {
+      cursorEl.classList.toggle(m, m === mode);
+      cursorRing.classList.toggle(m, m === mode);
     });
-    el.addEventListener('mouseleave', () => {
-      cursorEl.classList.remove('grow');
-      cursorRing.classList.remove('grow');
-    });
+    cursorEl.textContent = label || '';
+  }
+  function clearMode(){ setMode(null, ''); }
+
+  const bindMode = (el, mode, label) => {
+    el.addEventListener('mouseenter', () => setMode(mode, label));
+    el.addEventListener('mouseleave', clearMode);
   };
-  document.querySelectorAll('a, .project').forEach(bindHover);
-  window.__bindCursorHover = bindHover;
+
+  // links / nav / channel rows / interactive controls
+  document.querySelectorAll('a, button, input[type=checkbox], input[type=range]').forEach(el => bindMode(el, 'link', '↗'));
+  // project cards get a "click to expand" chip
+  document.querySelectorAll('.project').forEach(el => bindMode(el, 'project', 'Expand'));
+  // text bodies get an I-beam
+  document.querySelectorAll('p, .bio, .summary, .desc, li, .kv .v').forEach(el => bindMode(el, 'text', ''));
+
+  window.__bindCursorProject = (el) => bindMode(el, 'project', 'Expand');
+  window.__bindCursorLink = (el) => bindMode(el, 'link', '↗');
 }
 
 const orbWrap = document.getElementById('orbWrap');
@@ -817,7 +852,7 @@ function renderProjects(){
   list.querySelectorAll('.project').forEach(el => {
     el.addEventListener('click', () => el.classList.toggle('open'));
     io.observe(el);
-    if (window.__bindCursorHover) window.__bindCursorHover(el);
+    if (window.__bindCursorProject) window.__bindCursorProject(el);
   });
 }
 renderProjects();
