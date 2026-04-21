@@ -30,6 +30,40 @@ html,body{background:var(--bg);color:var(--ink);font-family:'Instrument Sans',sy
 body{overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 
+/* custom cursor — hide OS cursor on desktop */
+@media (hover: hover) and (pointer: fine){
+  html, body, a, button, input, textarea, select, .project, .sw, label { cursor: none; }
+}
+.cursor{
+  position:fixed;left:0;top:0;pointer-events:none;z-index:200;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--ink);
+  mix-blend-mode:multiply;
+  transform:translate(-50%,-50%);
+  transition: width .3s cubic-bezier(.77,0,.18,1), height .3s cubic-bezier(.77,0,.18,1), background .3s, border .3s, opacity .25s;
+  opacity:0;
+}
+.cursor.ready{ opacity:1 }
+.cursor.grow{
+  width:56px;height:56px;background:transparent;
+  border:1px solid var(--ink);
+  mix-blend-mode:normal;
+  opacity:.55;
+}
+.cursor-ring{
+  position:fixed;left:0;top:0;pointer-events:none;z-index:199;
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid var(--ink-soft);
+  transform:translate(-50%,-50%);
+  opacity:0;
+  transition: width .35s cubic-bezier(.77,0,.18,1), height .35s cubic-bezier(.77,0,.18,1), opacity .25s, border-color .3s;
+}
+.cursor-ring.ready{ opacity:.5 }
+.cursor-ring.grow{ width:72px;height:72px;border-color:var(--accent);opacity:.7 }
+@media (hover: none), (pointer: coarse){
+  .cursor, .cursor-ring{ display:none !important }
+}
+
 .stage{
   position:relative;
   background:var(--bg);
@@ -251,27 +285,128 @@ footer{
 .reveal{ opacity:0; transform: translateY(24px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1) }
 .reveal.in{ opacity:1; transform:none }
 
+/* tablet */
 @media (max-width: 900px){
+  .topbar{ padding: 22px 28px }
+  .topbar nav{ gap:18px }
+  .topbar nav a{ font-size:10.5px }
+  .hero{ padding: 24px 28px 60px; min-height: 88vh }
+  .meta-tl, .meta-tr{ top: 88px }
+  .meta-tl{ left: 28px; max-width:160px } .meta-tr{ right: 28px; max-width:200px }
+  .meta-bl{ left: 28px; bottom: 28px } .meta-br{ right:28px; bottom:28px; max-width:55% }
+  section.block, .contact{ padding: 90px 28px }
+  .about, .toolkit{ grid-template-columns: 1fr; gap:40px }
+  .section-head{ grid-template-columns: 1fr; gap:16px; margin-bottom:50px }
+  .section-head .desc{ justify-self:start; max-width: none }
+  .project{ grid-template-columns: 40px 1fr 28px; gap:16px }
+  .project .summary, .project .award{ grid-column: 2 / -1; padding-top:8px; text-align:left }
+  .project .plus{ grid-column: 3 }
+  .project .expand{ grid-column: 2 / -1 }
+  .exp{ grid-template-columns: 1fr; gap: 14px }
+  .progress-wrap{ display:none }
+}
+
+/* phone */
+@media (max-width: 640px){
   .topbar{ padding: 18px 20px }
   .topbar nav{ display:none }
-  .hero{ padding: 20px 20px 60px; min-height: 94vh }
-  .meta-tl, .meta-tr{ top: 80px }
-  .meta-tl{ left: 20px } .meta-tr{ right: 20px }
-  .meta-bl{ left: 20px; bottom: 24px } .meta-br{ right:20px; bottom:24px }
-  section.block, .contact{ padding: 70px 20px }
-  .about, .toolkit{ grid-template-columns: 1fr; gap:40px }
-  .section-head{ grid-template-columns: 1fr; gap:16px }
-  .section-head .desc{ justify-self:start; max-width: none }
-  .project{ grid-template-columns: 40px 1fr; gap:12px }
-  .project .summary, .project .award{ grid-column: 2 / -1; padding-top:8px; text-align:left }
-  .exp{ grid-template-columns: 1fr; gap: 14px }
-  .hero-title .s2{ transform: translateY(20px) } .hero-title .s3{ transform: translateY(30px) }
+  .monogram{ font-size: 24px }
+
+  .hero{
+    padding: 16px 20px 32px;
+    min-height: auto;
+    display:flex; flex-direction:column;
+    gap: 14px;
+  }
+  .hero-meta{
+    position:static; transform:none !important;
+    max-width:none !important; text-align:left !important;
+    font-size: 10.5px; letter-spacing:.06em;
+  }
+  .meta-tl{ order:1; padding-bottom:4px; border-bottom:1px solid var(--line) }
+  .meta-tr{ order:2 }
+  .meta-tr .num{ font-size:15px; margin-bottom:4px }
+
+  .orb-wrap{
+    position:relative; left:auto; top:auto; transform:none !important;
+    width: min(78vw, 340px); height: min(78vw, 340px);
+    margin: 4px auto 0; order:3;
+  }
+
+  .hero-sub{
+    position:static; transform:none; order:4; margin-top:-22px;
+    font-size: 20px;
+  }
+
+  .hero-title{ order:5; margin-top: 8px }
+  .hero-title span{
+    white-space:normal;
+    font-size: clamp(44px, 16vw, 86px);
+    line-height:0.92;
+  }
+  .hero-title .s1{ text-align:left; padding:0 }
+  .hero-title .s2{ text-align:left; padding:0; font-size: clamp(48px, 18vw, 96px); letter-spacing:-0.035em }
+  .hero-title .s3{ text-align:left; padding:0; font-size: clamp(52px, 20vw, 108px) }
+
+  .meta-bl, .meta-br{ order:6; padding-top:14px; border-top:1px solid var(--line); display:flex; align-items:center; gap:10px; width:100% }
+  .meta-br .rule{ display:none }
+  .meta-bl{ justify-content:space-between }
+
+  section.block{ padding: 64px 20px }
+  .contact{ padding: 72px 20px 56px }
+  .section-head{ margin-bottom: 36px; gap:12px }
+  .section-head h2{ font-size: clamp(44px, 13vw, 78px) }
+  .about{ gap: 28px }
+  .about .bio{ font-size: clamp(20px, 5.8vw, 26px); line-height:1.38 }
+  .about .side{ padding-top: 4px; gap: 14px }
+  .kv{ grid-template-columns: 96px 1fr; gap:10px; padding: 11px 0 }
+  .kv .k{ font-size:9.5px; letter-spacing:.12em }
+  .kv .v{ font-size:13.5px }
+
+  .exp{ padding: 28px 0; gap:10px }
+  .exp .role{ font-size: clamp(24px, 7vw, 34px) }
+
+  .project{
+    grid-template-columns: 28px 1fr 20px;
+    gap: 10px;
+    padding: 28px 0;
+  }
+  .project .num{ font-size:10px; padding-top:10px }
+  .project .title{ font-size: clamp(24px, 7vw, 38px); grid-column: 2; line-height:1.05 }
+  .project .summary{ grid-column: 1 / -1; padding-top: 8px; font-size:13.5px }
+  .project .award{ grid-column: 1 / -1; text-align:left; padding-top:6px; font-size:10px }
+  .project .plus{ grid-column: 3; width:18px; height:18px; margin-top: 6px }
+  .project .plus::before{ width:14px }
+  .project .plus::after{ height:14px }
+  .project .expand{ grid-column: 1 / -1 }
+  .project .detail{ grid-template-columns: 1fr; gap: 20px }
+  .project:hover .title{ transform:none }
+
+  .toolkit{ gap: 32px }
+  .tk-col h3{ margin-bottom:14px; padding-bottom:10px }
+  .tk-col li{ font-size: 19px; padding: 6px 0 }
+  .tk-col li:hover{ transform:none; font-style:normal; color:var(--ink) }
+
+  .contact h2{ font-size: clamp(50px, 14.5vw, 88px); margin-bottom: 28px }
+  .contact .row{ flex-direction: column; align-items: flex-start; gap: 24px; padding-top: 24px }
+  .contact .channels{ grid-template-columns: 1fr; gap:0; max-width:none; width:100% }
+  .contact .channels a{ padding: 12px 0 }
+
+  footer{
+    padding: 20px;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+    font-size: 10px;
+  }
 }
 </style>
 </head>
 <body>
 
 <div class="grain" id="grain"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
 
 <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="pfill"></div></div></div>
 
@@ -510,6 +645,51 @@ function onScroll(){
 document.addEventListener('scroll', onScroll, {passive:true});
 onScroll();
 
+// custom cursor — dot tracks exactly, ring trails with smoothing
+const cursorEl = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursorRing');
+const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+if (hasFinePointer){
+  let px = window.innerWidth/2, py = window.innerHeight/2;
+  let rx = px, ry = py;
+  let cursorReady = false;
+  document.addEventListener('mousemove', e => {
+    px = e.clientX; py = e.clientY;
+    cursorEl.style.transform = `translate(${px}px, ${py}px) translate(-50%, -50%)`;
+    if (!cursorReady){
+      cursorReady = true;
+      cursorEl.classList.add('ready');
+      cursorRing.classList.add('ready');
+    }
+  });
+  document.addEventListener('mouseleave', () => {
+    cursorEl.classList.remove('ready');
+    cursorRing.classList.remove('ready');
+  });
+  document.addEventListener('mouseenter', () => {
+    cursorEl.classList.add('ready');
+    cursorRing.classList.add('ready');
+  });
+  (function ringTick(){
+    rx += (px - rx) * 0.18;
+    ry += (py - ry) * 0.18;
+    cursorRing.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+    requestAnimationFrame(ringTick);
+  })();
+  const bindHover = (el) => {
+    el.addEventListener('mouseenter', () => {
+      cursorEl.classList.add('grow');
+      cursorRing.classList.add('grow');
+    });
+    el.addEventListener('mouseleave', () => {
+      cursorEl.classList.remove('grow');
+      cursorRing.classList.remove('grow');
+    });
+  };
+  document.querySelectorAll('a, .project').forEach(bindHover);
+  window.__bindCursorHover = bindHover;
+}
+
 const orbWrap = document.getElementById('orbWrap');
 
 function splitLetters(host){
@@ -638,6 +818,7 @@ function renderProjects(){
   list.querySelectorAll('.project').forEach(el => {
     el.addEventListener('click', () => el.classList.toggle('open'));
     io.observe(el);
+    if (window.__bindCursorHover) window.__bindCursorHover(el);
   });
 }
 renderProjects();
