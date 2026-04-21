@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Mihnea-Andrei Velcea — Junior AI Engineer</title>
+<meta name="description" content="Portfolio of Mihnea-Andrei Velcea, Junior AI Engineer based in Bucharest. Agentic workflows, LLM observability, evaluation."/>
+<meta name="theme-color" content="#e8ebd9"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<script>
+window.__TWEAKS = {
+  "palette": "sage",
+  "heroWord": "INTELLIGENCE",
+  "showOrb": true,
+  "grainStrength": 0.9,
+  "cursorFollower": true
+};
+</script>
+
+<style>
+:root {
+  /* sage — washed green paper */
+  --bg:       oklch(0.945 0.018 130);
+  --bg-deep:  oklch(0.905 0.022 132);
+  --ink:      oklch(0.28 0.028 145);
+  --ink-soft: oklch(0.42 0.028 142);
+  --ink-mute: oklch(0.58 0.024 140);
+  --line:     oklch(0.78 0.022 138);
+  --accent:   oklch(0.52 0.055 145);
+  --orb-a:    oklch(0.80 0.035 138);
+  --orb-b:    oklch(0.62 0.045 145);
+  --orb-c:    oklch(0.40 0.038 150);
+}
+[data-palette="moss"]{
+  --bg:       oklch(0.92 0.022 145);
+  --bg-deep:  oklch(0.875 0.028 148);
+  --ink:      oklch(0.24 0.032 150);
+  --ink-soft: oklch(0.38 0.032 148);
+  --ink-mute: oklch(0.55 0.028 145);
+  --line:     oklch(0.75 0.028 148);
+  --accent:   oklch(0.46 0.06 150);
+  --orb-a:    oklch(0.77 0.04 145);
+  --orb-b:    oklch(0.55 0.055 150);
+  --orb-c:    oklch(0.34 0.04 155);
+}
+[data-palette="olive"]{
+  --bg:       oklch(0.93 0.028 110);
+  --bg-deep:  oklch(0.885 0.032 112);
+  --ink:      oklch(0.28 0.035 115);
+  --ink-soft: oklch(0.42 0.035 113);
+  --ink-mute: oklch(0.58 0.03 112);
+  --line:     oklch(0.76 0.03 112);
+  --accent:   oklch(0.5 0.07 110);
+  --orb-a:    oklch(0.78 0.045 112);
+  --orb-b:    oklch(0.58 0.055 110);
+  --orb-c:    oklch(0.36 0.045 115);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-feature-settings:"ss01","cv11";-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+.stage{
+  position:relative;
+  background:var(--bg);
+  margin: 32px auto;
+  max-width: 1400px;
+  min-height: calc(100vh - 64px);
+  overflow:hidden;
+  box-shadow: 0 30px 120px -40px rgba(0,0,0,0.55);
+}
+@media (max-width: 900px){ .stage{ margin:0; } }
+
+.serif{font-family:'Cormorant Garamond',serif;font-weight:400;letter-spacing:-0.01em}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-soft)}
+.label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-soft)}
+
+.grain{
+  position:fixed;inset:0;pointer-events:none;z-index:100;mix-blend-mode:multiply;
+  opacity: var(--grain, .35);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.2  0 0 0 0 0.22  0 0 0 0 0.18  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.cursor{
+  position:fixed;pointer-events:none;z-index:200;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--ink);
+  mix-blend-mode:multiply;
+  transform:translate(-50%,-50%);
+  transition:width .3s, height .3s, background .3s;
+}
+.cursor.grow{width:56px;height:56px;background:var(--accent);opacity:.35}
+@media (hover: none){ .cursor{ display:none !important } }
+
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding: 28px 48px; position:relative; z-index:5;
+}
+.topbar nav{display:flex;gap:28px}
+.topbar nav a{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--ink-soft); position:relative; padding-bottom:2px;
+}
+.topbar nav a:hover{color:var(--ink)}
+.topbar nav a .u{position:absolute;left:0;right:0;bottom:-2px;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.77,0,.18,1)}
+.topbar nav a:hover .u{transform:scaleX(1)}
+.monogram{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;line-height:1;color:var(--ink);
+}
+
+.hero{
+  position:relative; padding: 40px 48px 80px; min-height: 82vh;
+  display:grid; grid-template-rows: 1fr auto; gap:40px;
+  overflow:hidden;
+}
+.hero-meta{
+  position:absolute; z-index:4;
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; color:var(--ink-soft);
+}
+.meta-tl{ top: 120px; left: 48px; max-width:180px; line-height:1.5 }
+.meta-tr{ top: 120px; right: 48px; text-align:right; max-width:240px; line-height:1.5 }
+.meta-tr .num{ font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; letter-spacing:0; text-transform:none; color:var(--ink); display:block; margin-bottom:8px }
+.meta-bl{ bottom: 40px; left: 48px }
+.meta-br{ bottom: 40px; right: 48px; display:flex; align-items:center; gap:12px }
+.meta-br .rule{ width:60px; height:1px; background:var(--ink-soft) }
+
+.orb-wrap{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width: min(62vw, 760px); height: min(62vw, 760px);
+  z-index:2; pointer-events:none;
+}
+.orb{ width:100%; height:100%; }
+
+.hero-title{
+  position:relative; z-index:3;
+  align-self:end;
+  pointer-events:none;
+  font-family:'Cormorant Garamond',serif;
+  color:var(--ink);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.88;
+  container-type: inline-size;
+}
+.hero-title span{
+  display:block;
+  white-space:nowrap;
+  font-size: clamp(40px, 9cqi, 170px);
+  will-change: transform;
+}
+.hero-title .letter{
+  display:inline-block;
+  will-change: transform;
+  transform: translate(0,0) rotate(0);
+}
+.hero-title .s1{ text-align:left; }
+.hero-title .s2{ text-align:center; padding-left: 10%; font-size: clamp(44px, 9.5cqi, 190px); letter-spacing:-0.03em; }
+.hero-title .s3{ text-align:right; padding-right: 4%; font-size: clamp(48px, 11cqi, 210px); }
+.hero-title em{ font-style:italic; color:var(--accent); letter-spacing: -0.015em; }
+
+.hero-sub{
+  position:absolute; left:50%; top: 40%; transform: translate(-50%, -50%);
+  z-index:4; text-align:center; pointer-events:none;
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  color:var(--ink); font-size: clamp(22px, 2.4vw, 34px);
+  letter-spacing:0;
+}
+
+section.block{
+  position:relative; padding: 120px 48px; border-top: 1px solid var(--line);
+}
+.section-head{
+  display:grid; grid-template-columns: 1fr 3fr; gap:40px; margin-bottom: 80px; align-items:end;
+}
+.section-head h2{
+  font-family:'Cormorant Garamond',serif; font-weight:400; font-size: clamp(56px, 7vw, 120px);
+  line-height:.9; letter-spacing:-0.02em;
+}
+.section-head h2 em{font-style:italic;color:var(--accent)}
+.section-head .desc{ color:var(--ink-soft); font-size: 15px; line-height:1.55; max-width: 420px; justify-self:end; }
+
+.about{
+  display:grid; grid-template-columns: 1fr 1.4fr; gap:60px; align-items:start;
+}
+.about .bio{ font-family:'Cormorant Garamond',serif; font-size: clamp(22px, 2.2vw, 30px); line-height:1.35; color:var(--ink); font-weight:300; letter-spacing:-0.005em }
+.about .bio em{font-style:italic;color:var(--accent)}
+.about .side{ display:flex; flex-direction:column; gap:24px; padding-top:12px }
+.kv{ display:grid; grid-template-columns: 140px 1fr; gap:16px; padding: 14px 0; border-bottom:1px solid var(--line); align-items:start }
+.kv .k{ font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-mute); padding-top:3px }
+.kv .v{ font-size:14.5px; color:var(--ink); line-height:1.5 }
+
+.projects{ display:flex; flex-direction:column; }
+.project{
+  position:relative; padding: 44px 0; border-top: 1px solid var(--line);
+  display:grid; grid-template-columns: 60px 1fr 1.5fr 140px 40px; gap:32px; align-items:start;
+  cursor:pointer; transition: background .4s;
+}
+.project:last-child{ border-bottom:1px solid var(--line) }
+.project:hover{ background: var(--bg-deep) }
+.project .num{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-mute); padding-top:14px }
+.project .title{ font-family:'Cormorant Garamond',serif; font-size: clamp(32px, 4.2vw, 58px); line-height:1; letter-spacing:-0.01em; font-weight:400; transition: transform .5s cubic-bezier(.77,0,.18,1) }
+.project .title em{ font-style:italic; color:var(--accent) }
+.project:hover .title{ transform: translateX(18px) }
+.project .summary{ color:var(--ink-soft); font-size:14.5px; line-height:1.55; padding-top:12px }
+.project .award{ font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); text-align:right; padding-top:16px }
+.project .expand{
+  grid-column: 2 / 5; overflow:hidden;
+  max-height: 0; transition: max-height .6s cubic-bezier(.77,0,.18,1), margin .6s;
+}
+.project.open .expand{ max-height: 600px; margin-top:28px }
+.project .detail{
+  display:grid; grid-template-columns: 1fr 1fr; gap:40px; padding: 24px 0 8px;
+  border-top: 1px solid var(--line);
+}
+.project .detail p{ font-size:14.5px; line-height:1.6; color:var(--ink-soft) }
+.project .tech{ display:flex; flex-wrap:wrap; gap:6px; margin-top:16px }
+.project .tech span{
+  font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.08em;
+  padding: 5px 10px; border:1px solid var(--line); color:var(--ink-soft); border-radius: 2px;
+}
+.project .plus{
+  position:relative; width: 22px; height: 22px; margin-top: 14px; justify-self:end;
+}
+.project .plus::before, .project .plus::after{
+  content:""; position:absolute; background:var(--ink); left:50%; top:50%;
+}
+.project .plus::before{ width:18px; height:1px; transform:translate(-50%,-50%) }
+.project .plus::after{ width:1px; height:18px; transform:translate(-50%,-50%); transition: transform .4s }
+.project.open .plus::after{ transform: translate(-50%,-50%) rotate(90deg); opacity:0 }
+
+.toolkit{
+  display:grid; grid-template-columns: repeat(3, 1fr); gap: 48px;
+}
+.tk-col h3{
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink-mute); margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid var(--line);
+}
+.tk-col ul{ list-style:none; display:flex; flex-direction:column; gap:2px }
+.tk-col li{
+  font-family:'Cormorant Garamond',serif; font-size: 22px; letter-spacing:-0.005em; color:var(--ink);
+  padding: 8px 0; cursor:default; transition: transform .4s, color .4s;
+}
+.tk-col li:hover{ transform: translateX(10px); color:var(--accent); font-style:italic }
+
+.exp{
+  display:grid; grid-template-columns: 240px 1fr; gap:40px; border-top:1px solid var(--line); padding: 40px 0;
+}
+.exp:last-of-type{ border-bottom:1px solid var(--line) }
+.exp .when{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em; color:var(--ink-mute); text-transform:uppercase }
+.exp .role{ font-family:'Cormorant Garamond',serif; font-size: clamp(28px, 3vw, 42px); line-height:1.05; letter-spacing:-0.01em; margin-bottom: 6px }
+.exp .role em{ font-style:italic; color:var(--accent) }
+.exp .org{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em; color:var(--ink-soft); text-transform:uppercase; margin-bottom: 18px }
+.exp ul{ list-style:none; display:flex; flex-direction:column; gap:10px; max-width: 720px }
+.exp ul li{ font-size:14.5px; line-height:1.6; color:var(--ink-soft); padding-left: 22px; position:relative }
+.exp ul li::before{ content:""; position:absolute; left:0; top:11px; width:10px; height:1px; background:var(--ink-mute) }
+
+.contact{
+  position:relative; padding: 140px 48px 100px; border-top:1px solid var(--line); overflow:hidden;
+}
+.contact .kicker{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; color:var(--ink-mute); text-transform:uppercase; margin-bottom:24px }
+.contact h2{
+  font-family:'Cormorant Garamond',serif; font-weight:400; font-size: clamp(72px, 11vw, 200px);
+  line-height:.88; letter-spacing:-0.025em; margin-bottom:40px;
+}
+.contact h2 em{ font-style:italic; color:var(--accent) }
+.contact .arrow{ display:inline-block; font-style:italic; font-family:'Cormorant Garamond',serif }
+.contact .row{
+  display:flex; justify-content:space-between; align-items:flex-end; gap:40px;
+  border-top:1px solid var(--line); padding-top:32px; flex-wrap:wrap;
+}
+.contact .channels{ display:grid; grid-template-columns: 1fr 1fr; gap: 8px 40px; max-width: 520px }
+.contact .channels a{
+  display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid var(--line);
+  font-size: 14.5px; color:var(--ink);
+  transition: color .3s, padding .3s;
+}
+.contact .channels a:hover{ color:var(--accent); padding-left:6px }
+.contact .channels a .k{ font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-mute); align-self:center }
+
+footer{
+  padding: 24px 48px; display:flex; justify-content:space-between;
+  font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.12em; color:var(--ink-mute); text-transform:uppercase;
+  border-top: 1px solid var(--line);
+}
+
+.progress-wrap{
+  position:fixed; right:0; top:0; bottom:0; width:28px; z-index:50;
+  display:flex; flex-direction:column; justify-content:center; pointer-events:none;
+}
+.progress-bar{
+  position:relative; width:1px; margin:0 auto; height:60%; background:var(--line);
+}
+.progress-fill{ position:absolute; left:-1px; top:0; width:3px; height:0; background:var(--ink); transition: height .1s linear }
+.progress-label{
+  position:absolute; right:0; top:50%; transform: translate(-6px, -50%) rotate(-90deg); transform-origin: right center;
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; color:var(--ink-mute); white-space:nowrap;
+}
+
+.reveal{ opacity:0; transform: translateY(24px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1) }
+.reveal.in{ opacity:1; transform:none }
+
+.tweaks{
+  position:fixed; right:20px; bottom:20px; z-index:300;
+  background:var(--bg); border:1px solid var(--line); padding: 18px; min-width: 280px;
+  box-shadow: 0 20px 60px -20px rgba(0,0,0,.4);
+  display:none; flex-direction:column; gap:14px;
+  font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink);
+}
+.tweaks.on{ display:flex }
+.tweaks h4{ font-family:'Cormorant Garamond',serif; font-weight:400; font-size:22px; font-style:italic; letter-spacing:-0.01em; text-transform:none; display:flex; justify-content:space-between; align-items:center }
+.tweaks h4 .hint{ font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.14em; color:var(--ink-mute); text-transform:uppercase; font-style:normal }
+.tweaks .row{ display:flex; justify-content:space-between; align-items:center; gap:12px }
+.tweaks .row label{ font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-mute) }
+.tweaks select, .tweaks input[type="text"]{
+  background:transparent; border:1px solid var(--line); padding:6px 8px; font-family:inherit; font-size:11px; color:var(--ink); border-radius:0;
+}
+.tweaks input[type="checkbox"]{ accent-color: var(--accent) }
+.tweaks input[type="range"]{ width: 120px; accent-color: var(--accent) }
+.tweaks .swatches{ display:flex; gap:6px }
+.tweaks .sw{ width:22px; height:22px; border:1px solid var(--line); cursor:pointer; border-radius:50%; }
+.tweaks .sw.on{ outline:1px solid var(--ink); outline-offset:2px }
+
+@media (max-width: 900px){
+  .topbar{ padding: 18px 20px }
+  .topbar nav{ display:none }
+  .hero{ padding: 20px 20px 60px; min-height: 90vh }
+  .meta-tl, .meta-tr{ top: 80px }
+  .meta-tl{ left: 20px } .meta-tr{ right: 20px }
+  .meta-bl{ left: 20px; bottom: 24px } .meta-br{ right:20px; bottom:24px }
+  section.block, .contact{ padding: 70px 20px }
+  .about, .toolkit{ grid-template-columns: 1fr; gap:40px }
+  .section-head{ grid-template-columns: 1fr; gap:16px }
+  .section-head .desc{ justify-self:start; max-width: none }
+  .project{ grid-template-columns: 40px 1fr; gap:12px }
+  .project .summary, .project .award{ grid-column: 2 / -1; padding-top:8px; text-align:left }
+  .exp{ grid-template-columns: 1fr; gap: 14px }
+  .hero-title .s2{ transform: translateY(20px) } .hero-title .s3{ transform: translateY(30px) }
+}
+</style>
+</head>
+<body>
+
+<div class="grain" id="grain"></div>
+<div class="cursor" id="cursor"></div>
+
+<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="pfill"></div></div></div>
+
+<div class="stage" id="stage" data-palette="sage">
+
+  <header class="topbar">
+    <div class="monogram">M<span style="font-style:normal">·</span>V</div>
+    <nav>
+      <a href="#work">Work<span class="u"></span></a>
+      <a href="#projects">Projects<span class="u"></span></a>
+      <a href="#toolkit">Toolkit<span class="u"></span></a>
+      <a href="#contact">Say hi<span class="u"></span></a>
+    </nav>
+  </header>
+
+  <section class="hero" id="hero">
+    <div class="hero-meta meta-tl">
+      <div class="label" style="margin-bottom:6px">Portfolio — 2026</div>
+      Mihnea-Andrei Velcea<br/>
+      Junior AI Engineer<br/>
+      Bucharest, RO
+    </div>
+    <div class="hero-meta meta-tr">
+      <span class="num">01 — Currently</span>
+      Building agentic workflows<br/>
+      at HazelHeartwood —<br/>
+      LangGraph × Azure
+    </div>
+
+    <div class="orb-wrap" id="orbWrap">
+      <svg class="orb" id="orb" viewBox="-200 -200 400 400" aria-hidden="true">
+        <defs>
+          <radialGradient id="og" cx="40%" cy="35%" r="75%">
+            <stop offset="0%" stop-color="var(--orb-a)" stop-opacity="1"/>
+            <stop offset="55%" stop-color="var(--orb-b)" stop-opacity="1"/>
+            <stop offset="100%" stop-color="var(--orb-c)" stop-opacity="1"/>
+          </radialGradient>
+          <filter id="soft"><feGaussianBlur stdDeviation="1.2"/></filter>
+          <filter id="grain2"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2"/>
+            <feColorMatrix values="0 0 0 0 0.3  0 0 0 0 0.34  0 0 0 0 0.28  0 0 0 0.6 0"/>
+            <feComposite in2="SourceGraphic" operator="in"/>
+          </filter>
+        </defs>
+        <g id="orbBody">
+          <circle r="165" fill="url(#og)" filter="url(#soft)"/>
+          <circle r="165" fill="url(#og)" filter="url(#grain2)" opacity=".35"/>
+        </g>
+        <g id="orbRings" fill="none" stroke="var(--orb-c)" stroke-opacity=".32" stroke-width=".6"></g>
+        <g id="orbFolds" stroke="var(--ink)" stroke-opacity=".08" stroke-width=".4" fill="none"></g>
+      </svg>
+    </div>
+
+    <div class="hero-sub" id="heroSub">a portfolio in residence</div>
+
+    <div class="hero-title">
+      <span class="s1">Artificial</span>
+      <span class="s2"><em id="heroWord">INTELLIGENCE</em></span>
+      <span class="s3"><i>engineered.</i></span>
+    </div>
+
+    <div class="hero-meta meta-bl">
+      <div>© 2026 · v1.0</div>
+      <div style="margin-top:4px">Scroll ↓</div>
+    </div>
+    <div class="hero-meta meta-br">
+      <span class="rule"></span>
+      <a href="#contact" style="color:var(--ink)">Open to collaborations &amp; hackathon teams</a>
+    </div>
+  </section>
+
+  <section class="block" id="work">
+    <div class="section-head reveal">
+      <h2>About<br/><em>the engineer</em></h2>
+      <p class="desc">
+        I build stateful LLM systems: agentic workflows, observable inference pipelines and the glue that turns
+        a model into a product. Currently at HazelHeartwood, shipping an AI-assisted project
+        management platform on Azure.
+      </p>
+    </div>
+
+    <div class="about reveal">
+      <p class="bio">
+        Junior AI Engineer based in Bucharest. I spend my days wiring up <em>LangGraph</em>
+        agents and instrumenting LLM pipelines for observability, and my nights turning hackathon prompts
+        into quietly over-engineered prototypes. Computer Science at the University of
+        Bucharest, class of '27.
+      </p>
+      <div class="side">
+        <div class="kv"><div class="k">Role</div><div class="v">Junior AI Engineer · HazelHeartwood</div></div>
+        <div class="kv"><div class="k">Based</div><div class="v">București, România</div></div>
+        <div class="kv"><div class="k">Studying</div><div class="v">BSc Computer Science, Universitatea din București</div></div>
+        <div class="kv"><div class="k">Focus</div><div class="v">Agentic AI · LLM Observability · Traceability · Evaluation</div></div>
+        <div class="kv"><div class="k">Wins</div><div class="v">1st, BESTEM Hackathon · 3rd, Innovate4AI (Adobe)</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:100px">
+      <div class="mono reveal" style="margin-bottom:28px">— Professional experience</div>
+      <div class="exp reveal">
+        <div class="when">01 / 2026 — Present<br/>Bucharest, RO</div>
+        <div>
+          <div class="role">Junior <em>AI Engineer</em></div>
+          <div class="org">HazelHeartwood</div>
+          <ul>
+            <li>Engineering stateful LLM applications and agentic workflows with LangChain and LangGraph: the core of an AI-assisted project management platform.</li>
+            <li>Shipping AI features like automated task breakdowns, timeline estimation and status summarisation that measurably improve team throughput.</li>
+            <li>Designing multi-agent systems for dynamic, multi-step queries around project tracking and resource allocation.</li>
+            <li>Instrumenting LLM workflows for observability and traceability, with tracing, token-level telemetry and evaluation hooks across every agent hop.</li>
+            <li>Deploying and scaling models on Azure (OpenAI, App Service) with a focus on security and reliability.</li>
+            <li>Building technical PoCs to vet AI platforms for company-wide adoption.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="exp reveal">
+        <div class="when">11 / 2023 — Present<br/>Bucharest, RO</div>
+        <div>
+          <div class="role"><em>Volunteer</em> &amp; Project Lead</div>
+          <div class="org">Math &amp; CS Student Association · Universitatea din București</div>
+          <ul>
+            <li>Directed two major organisational projects end-to-end: logistics, budget, cross-functional teams.</li>
+            <li>Led fundraising strategy to secure operational funding; onboarded volunteers across departments.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="projects">
+    <div class="section-head reveal">
+      <h2>Selected<br/><em>projects</em></h2>
+      <p class="desc">
+        Three projects I keep coming back to: two hackathon winners and a rapid 24-hour build.
+        Tap any entry to expand.
+      </p>
+    </div>
+
+    <div class="projects" id="projectsList"></div>
+  </section>
+
+  <section class="block" id="toolkit">
+    <div class="section-head reveal">
+      <h2>The<br/><em>toolkit</em></h2>
+      <p class="desc">
+        The libraries, concepts and platforms I reach for most often. Roughly the
+        shape of a modern applied-AI stack.
+      </p>
+    </div>
+
+    <div class="toolkit reveal">
+      <div class="tk-col">
+        <h3>Frameworks &amp; Libraries</h3>
+        <ul>
+          <li>LangChain</li><li>LangGraph</li><li>PyTorch</li><li>Scikit-Learn</li>
+          <li>Transformers</li><li>ChromaDB</li><li>Pandas</li><li>NumPy</li>
+        </ul>
+      </div>
+      <div class="tk-col">
+        <h3>Concepts &amp; Methods</h3>
+        <ul>
+          <li>Agentic AI</li><li>LLM Observability</li><li>Traceability &amp; Tracing</li>
+          <li>Zero-Shot Classification</li><li>Vector Embeddings</li><li>Synthetic Data Generation</li>
+          <li>Model Evaluation</li><li>Statistical Modelling</li>
+        </ul>
+      </div>
+      <div class="tk-col">
+        <h3>Tools &amp; Platforms</h3>
+        <ul>
+          <li>Azure · OpenAI</li><li>Docker</li><li>Hugging Face</li>
+          <li>Ollama</li><li>Git &amp; GitHub</li><li>CI/CD Pipelines</li>
+          <li>FastAPI</li><li>SQLAlchemy</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="kicker reveal">— 04 · Say hi</div>
+    <h2 class="reveal">Let's build<br/>something <em>quietly</em><br/>useful <span class="arrow">↗</span></h2>
+
+    <div class="row reveal">
+      <div style="max-width:420px; color:var(--ink-soft); font-size:15px; line-height:1.55">
+        Not job-hunting at the moment, but always up for hackathon teams, side projects and
+        conversations around applied LLM work. Agents, observability, evaluation, the unglamorous plumbing
+        that makes models behave.
+      </div>
+      <div class="channels">
+        <a href="mailto:mihneave2004@gmail.com"><span class="k">Email</span><span>mihneave2004@gmail.com</span></a>
+        <a href="tel:+40721990601"><span class="k">Phone</span><span>+40 721 990 601</span></a>
+        <a href="https://linkedin.com/in/mihnea-andrei-velcea" target="_blank" rel="noopener"><span class="k">LinkedIn</span><span>/mihnea-andrei-velcea</span></a>
+        <a href="https://github.com/MihneaVe" target="_blank" rel="noopener"><span class="k">GitHub</span><span>/MihneaVe</span></a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 2026 · Mihnea-Andrei Velcea</div>
+    <div>Designed &amp; written in Bucharest</div>
+    <div>v1.0 · sage edition</div>
+  </footer>
+
+</div>
+
+<div class="tweaks" id="tweaks">
+  <h4>Tweaks <span class="hint">press T</span></h4>
+  <div class="row">
+    <label>Palette</label>
+    <div class="swatches" id="swatches">
+      <div class="sw" data-p="sage" style="background:oklch(0.8 0.035 138)"></div>
+      <div class="sw" data-p="moss" style="background:oklch(0.72 0.05 148)"></div>
+      <div class="sw" data-p="olive" style="background:oklch(0.76 0.05 112)"></div>
+    </div>
+  </div>
+  <div class="row">
+    <label>Hero word</label>
+    <input type="text" id="twHero" maxlength="18"/>
+  </div>
+  <div class="row">
+    <label>Show orb</label>
+    <input type="checkbox" id="twOrb"/>
+  </div>
+  <div class="row">
+    <label>Grain</label>
+    <input type="range" id="twGrain" min="0" max="0.9" step="0.05"/>
+  </div>
+  <div class="row">
+    <label>Cursor follower</label>
+    <input type="checkbox" id="twCursor"/>
+  </div>
+</div>
+
+<script>
+(function(){
+  const rings = document.getElementById('orbRings');
+  const folds = document.getElementById('orbFolds');
+  let r = '';
+  for (let i = 0; i < 18; i++){
+    const rad = 40 + i * 8 + Math.random()*3;
+    const cx = (Math.random()-0.5)*14;
+    const cy = (Math.random()-0.5)*14;
+    r += `<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rad.toFixed(1)}" ry="${(rad*0.96).toFixed(1)}"/>`;
+  }
+  rings.innerHTML = r;
+
+  let f = '';
+  for (let i = 0; i < 22; i++){
+    const x = -160 + i * 15 + (Math.random()-0.5)*4;
+    const amp = 8 + Math.random()*10;
+    let d = `M ${x} -170 `;
+    for (let y = -160; y <= 170; y += 12){
+      const ox = Math.sin(y*0.02 + i)*amp*0.4 + (Math.random()-0.5)*1.5;
+      d += `L ${(x+ox).toFixed(1)} ${y} `;
+    }
+    f += `<path d="${d}"/>`;
+  }
+  folds.innerHTML = f;
+})();
+
+const stage = document.getElementById('stage');
+const cursor = document.getElementById('cursor');
+const pfill = document.getElementById('pfill');
+
+let cursorOn = window.__TWEAKS.cursorFollower;
+function setCursor(on){
+  cursorOn = on;
+  cursor.style.display = on ? 'block' : 'none';
+}
+setCursor(cursorOn);
+document.addEventListener('mousemove', e => {
+  if (!cursorOn) return;
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top  = e.clientY + 'px';
+});
+document.querySelectorAll('a, .project, .sw, input, select').forEach(el => {
+  el.addEventListener('mouseenter', ()=>cursor.classList.add('grow'));
+  el.addEventListener('mouseleave', ()=>cursor.classList.remove('grow'));
+});
+
+function onScroll(){
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  const p = Math.max(0, Math.min(1, window.scrollY / h));
+  pfill.style.height = (p*100) + '%';
+}
+document.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+
+const orbWrap = document.getElementById('orbWrap');
+
+function splitLetters(host){
+  const target = host.querySelector('em, i') || host;
+  const text = target.textContent;
+  target.textContent = '';
+  const frag = document.createDocumentFragment();
+  for (const ch of text){
+    const s = document.createElement('span');
+    s.className = 'letter';
+    s.textContent = ch === ' ' ? '\u00a0' : ch;
+    frag.appendChild(s);
+  }
+  target.appendChild(frag);
+}
+document.querySelectorAll('.hero-title span').forEach(splitLetters);
+
+const heroLetters = document.querySelectorAll('.hero-title .letter');
+let mx = 0, my = 0, tx = 0, ty = 0;
+let cx = -9999, cy = -9999;
+document.addEventListener('mousemove', e => {
+  mx = (e.clientX / window.innerWidth - 0.5);
+  my = (e.clientY / window.innerHeight - 0.5);
+  cx = e.clientX; cy = e.clientY;
+});
+document.addEventListener('mouseleave', () => { cx = -9999; cy = -9999; });
+
+const letterState = Array.from(heroLetters).map(() => ({ox:0, oy:0, tx:0, ty:0, rot:0, trot:0}));
+function tick(){
+  tx += (mx - tx) * 0.06;
+  ty += (my - ty) * 0.06;
+  const scrollOffset = Math.min(1, window.scrollY / 600);
+  orbWrap.style.transform = `translate(calc(-50% + ${tx*30}px), calc(-50% + ${ty*24 - scrollOffset*80}px)) scale(${1 - scrollOffset*0.08})`;
+  orbWrap.style.opacity = 1 - scrollOffset*0.4;
+
+  const RADIUS = 180;
+  heroLetters.forEach((el, i) => {
+    const r = el.getBoundingClientRect();
+    const bx = r.left + r.width/2;
+    const by = r.top + r.height/2;
+    const dx = bx - cx;
+    const dy = by - cy;
+    const dist = Math.hypot(dx, dy);
+    const s = letterState[i];
+    if (dist < RADIUS && dist > 0){
+      const force = 1 - dist/RADIUS;
+      const f = force * force * 85;
+      s.tx = (dx/dist) * f;
+      s.ty = (dy/dist) * f;
+      s.trot = (dx/dist) * force * 14;
+    } else {
+      s.tx = 0; s.ty = 0; s.trot = 0;
+    }
+    s.ox += (s.tx - s.ox) * 0.18;
+    s.oy += (s.ty - s.oy) * 0.18;
+    s.rot += (s.trot - s.rot) * 0.18;
+    el.style.transform = `translate(${s.ox.toFixed(2)}px, ${s.oy.toFixed(2)}px) rotate(${s.rot.toFixed(2)}deg)`;
+  });
+
+  requestAnimationFrame(tick);
+}
+tick();
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+document.querySelectorAll('.topbar nav a, a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if (!href || !href.startsWith('#')) return;
+    const el = document.querySelector(href);
+    if (!el) return;
+    e.preventDefault();
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 10, behavior:'smooth' });
+  });
+});
+
+const PROJECTS = [
+  {
+    id: 1,
+    title: 'Local RAG for <em>Travel Safety</em>',
+    summary: 'Privacy-first retrieval-augmented generation system for real-time travel safety guidance, with no external APIs and full data sovereignty.',
+    award: '1st · BESTEM Hackathon',
+    detail: `A multi-stage inference pipeline that classifies user intent with BART-Large-MNLI (zero-shot across Safety / Emergency / Criminality), then routes queries to specialised local knowledge bases. Response generation runs on a locally hosted Gemma 2 (9B) via Ollama, with structured CSV injection and semantic search through ChromaDB. A FastAPI + SQLAlchemy layer manages persistent chat sessions and history for low-latency interaction.`,
+    tech: ['LangChain','Gemma 2 · Ollama','BART Zero-Shot','ChromaDB','FastAPI','SQLAlchemy','Pandas']
+  },
+  {
+    id: 2,
+    title: 'Agentic AI for <em>Quantum Error Correction</em>',
+    summary: 'Autonomous pipeline that diagnoses and corrects quantum hardware errors, bringing calibration time from hours down to seconds.',
+    award: '3rd · Innovate4AI (Adobe)',
+    detail: `A supervised model trained on synthetic circuit data hits 85% diagnostic accuracy across five error categories. A local RAG loop over a Gemma-3 LLM dynamically generates hardware-aware circuit patches for each classified fault, and a secondary validation agent closes the loop, establishing a robust, iterative calibration protocol.`,
+    tech: ['LangChain','Gemma-3 · Local','RAG','PyTorch','Synthetic Data','Closed-Loop Control']
+  },
+  {
+    id: 3,
+    title: '<em>Burnout Sentinel</em>',
+    summary: 'On-device LLM pipeline that fuses live heart-rate signal with Slack context to detect burnout and auto-trigger recovery actions, with the LLM call kept off the critical path.',
+    award: 'HackITall · ING',
+    detail: `An AI-first \u201csense, think, act\u201d loop. A synchronous rule layer (BPM delta vs. a dynamically calibrated baseline plus an HRV proxy) fires UI state instantly on a stress event, while a non-blocking local Gemma call enriches the response when it arrives, so model latency never blocks the user. Context ingestion and downstream action both ride Model Context Protocol (MCP) servers: Slack batches are normalised and truncated to stay prompt-window efficient, and Notion task creation happens as a first-class tool call rather than bespoke glue. Inference runs fully on-device via Ollama, with full request tracing through a MongoDB write-ahead log for observability over the agent\u2019s decisions.`,
+    tech: ['Ollama \u00b7 Gemma','LangChain','MCP \u00b7 Slack + Notion','FastAPI','MongoDB','On-device Inference']
+  }
+];
+function renderProjects(){
+  const list = document.getElementById('projectsList');
+  list.innerHTML = PROJECTS.map((p, i) => `
+    <article class="project reveal" data-idx="${i}">
+      <div class="num">${String(i+1).padStart(2,'0')}</div>
+      <h3 class="title">${p.title}</h3>
+      <p class="summary">${p.summary}</p>
+      <div class="award">${p.award}</div>
+      <div class="plus"></div>
+      <div class="expand">
+        <div class="detail">
+          <p>${p.detail}</p>
+          <div>
+            <div class="label" style="margin-bottom:10px">— Stack</div>
+            <div class="tech">${p.tech.map(t => `<span>${t}</span>`).join('')}</div>
+          </div>
+        </div>
+      </div>
+    </article>
+  `).join('');
+  list.querySelectorAll('.project').forEach(el => {
+    el.addEventListener('click', () => el.classList.toggle('open'));
+    io.observe(el);
+    el.addEventListener('mouseenter', ()=>cursor.classList.add('grow'));
+    el.addEventListener('mouseleave', ()=>cursor.classList.remove('grow'));
+  });
+}
+renderProjects();
+
+const T = window.__TWEAKS;
+const panel = document.getElementById('tweaks');
+const swatches = document.getElementById('swatches');
+const twHero = document.getElementById('twHero');
+const twOrb = document.getElementById('twOrb');
+const twGrain = document.getElementById('twGrain');
+const twCursor = document.getElementById('twCursor');
+
+function applyTweaks(){
+  stage.setAttribute('data-palette', T.palette);
+  document.getElementById('heroWord').textContent = T.heroWord;
+  document.getElementById('orbWrap').style.display = T.showOrb ? 'block' : 'none';
+  document.documentElement.style.setProperty('--grain', T.grainStrength);
+  setCursor(T.cursorFollower);
+  [...swatches.children].forEach(c => c.classList.toggle('on', c.dataset.p === T.palette));
+  twHero.value = T.heroWord;
+  twOrb.checked = T.showOrb;
+  twGrain.value = T.grainStrength;
+  twCursor.checked = T.cursorFollower;
+  document.querySelectorAll('.hero-title span').forEach(splitLetters);
+}
+applyTweaks();
+
+function persist(edits){
+  Object.assign(T, edits);
+  applyTweaks();
+}
+
+swatches.addEventListener('click', e => {
+  const sw = e.target.closest('.sw'); if (!sw) return;
+  persist({ palette: sw.dataset.p });
+});
+twHero.addEventListener('input', e => {
+  const v = e.target.value.toUpperCase() || 'INTELLIGENCE';
+  T.heroWord = v;
+  document.getElementById('heroWord').textContent = v;
+  document.querySelectorAll('.hero-title span').forEach(splitLetters);
+});
+twOrb.addEventListener('change', e => persist({ showOrb: e.target.checked }));
+twGrain.addEventListener('input', e => persist({ grainStrength: parseFloat(e.target.value) }));
+twCursor.addEventListener('change', e => persist({ cursorFollower: e.target.checked }));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 't' || e.key === 'T'){
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    panel.classList.toggle('on');
+  }
+});
+</script>
+
+</body>
+</html>
