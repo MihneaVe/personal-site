@@ -56,7 +56,6 @@ a{color:inherit;text-decoration:none}
 }
 .cursor.ready{ opacity:1 }
 .cursor.link{ background:var(--accent) }
-.cursor.project{ background:var(--ink) }
 .cursor-ring{
   position:fixed;left:0;top:0;pointer-events:none;z-index:200;
   width:40px;height:40px;border-radius:50%;
@@ -68,7 +67,6 @@ a{color:inherit;text-decoration:none}
 }
 .cursor-ring.ready{ opacity:.5 }
 .cursor-ring.link{ border-color:var(--accent); border-width:1.5px; opacity:.85 }
-.cursor-ring.project{ border-color:var(--ink); border-width:1.5px; opacity:.75 }
 @media (hover: none), (pointer: coarse){
   .cursor, .cursor-ring{ display:none !important }
   *, *::before, *::after { cursor: auto !important }
@@ -689,11 +687,10 @@ if (hasFinePointer){
     requestAnimationFrame(ringTick);
   })();
 
-  const MODES = ['link','project'];
-  // counts: how many elements of each mode we're currently inside (handles nested/overlapping hovers)
-  const modeCounts = { link: 0, project: 0 };
+  const MODES = ['link'];
+  const modeCounts = { link: 0 };
   function refresh(){
-    const active = modeCounts.link > 0 ? 'link' : (modeCounts.project > 0 ? 'project' : null);
+    const active = modeCounts.link > 0 ? 'link' : null;
     MODES.forEach(m => {
       cursorEl.classList.toggle(m, m === active);
       cursorRing.classList.toggle(m, m === active);
@@ -704,12 +701,10 @@ if (hasFinePointer){
     el.addEventListener('mouseleave', () => { modeCounts[mode] = Math.max(0, modeCounts[mode]-1); refresh(); });
   };
 
-  // interactive controls — link mode (wins over project mode via priority in refresh())
+  // only real interactive controls (links, buttons, form inputs) change the cursor. project cards are hover-inert.
   document.querySelectorAll('a, button, input[type=checkbox], input[type=range]').forEach(el => bindMode(el, 'link'));
-  // project cards — project mode
-  document.querySelectorAll('.project').forEach(el => bindMode(el, 'project'));
 
-  window.__bindCursorProject = (el) => bindMode(el, 'project');
+  window.__bindCursorProject = () => {}; // no-op — projects no longer affect cursor
   window.__bindCursorLink = (el) => bindMode(el, 'link');
 }
 
