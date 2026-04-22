@@ -47,25 +47,26 @@ a{color:inherit;text-decoration:none}
   position:fixed;left:0;top:0;pointer-events:none;z-index:201;
   width:8px;height:8px;border-radius:50%;
   background:var(--ink);
-  mix-blend-mode:multiply;
-  transform:translate(-50%,-50%);
-  transition: background .25s, opacity .2s;
+  transform:translate3d(-50%,-50%,0);
+  transition: background .2s, opacity .2s;
   opacity:0;
+  will-change: transform;
 }
 .cursor.ready{ opacity:1 }
 .cursor.link{ background:var(--accent) }
 .cursor.project{ background:var(--ink) }
 .cursor-ring{
   position:fixed;left:0;top:0;pointer-events:none;z-index:200;
-  width:36px;height:36px;border-radius:50%;
+  width:40px;height:40px;border-radius:50%;
   border:1px solid var(--ink-soft);
-  transform:translate(-50%,-50%);
+  transform:translate3d(-50%,-50%,0);
   opacity:0;
-  transition: width .3s cubic-bezier(.77,0,.18,1), height .3s cubic-bezier(.77,0,.18,1), opacity .25s, border-color .3s;
+  transition: opacity .2s, border-color .25s, border-width .25s;
+  will-change: transform;
 }
-.cursor-ring.ready{ opacity:.55 }
-.cursor-ring.link{ width:54px;height:54px;border-color:var(--accent);border-width:1.5px;opacity:.95 }
-.cursor-ring.project{ width:78px;height:78px;border-color:var(--ink);opacity:.75 }
+.cursor-ring.ready{ opacity:.5 }
+.cursor-ring.link{ border-color:var(--accent); border-width:1.5px; opacity:.85 }
+.cursor-ring.project{ border-color:var(--ink); border-width:1.5px; opacity:.75 }
 @media (hover: none), (pointer: coarse){
   .cursor, .cursor-ring{ display:none !important }
   *, *::before, *::after { cursor: auto !important }
@@ -192,13 +193,12 @@ section.block{
 .project{
   position:relative; padding: 44px 0; border-top: 1px solid var(--line);
   display:grid; grid-template-columns: 60px 1fr 1.5fr 140px 40px; gap:32px; align-items:start;
-  cursor:pointer; transition: background .4s;
+  cursor:pointer;
   user-select: none; -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
 .project:last-child{ border-bottom:1px solid var(--line) }
-.project:hover{ background: var(--bg-deep) }
 .project .num{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-mute); padding-top:14px }
 .project .title{ font-family:'Cormorant Garamond',serif; font-size: clamp(32px, 4.2vw, 58px); line-height:1; letter-spacing:-0.01em; font-weight:400; }
 .project .title em{ font-style:italic; color:var(--accent) }
@@ -665,7 +665,7 @@ if (hasFinePointer){
   let cursorReady = false;
   document.addEventListener('mousemove', e => {
     px = e.clientX; py = e.clientY;
-    cursorEl.style.transform = `translate(${px}px, ${py}px) translate(-50%, -50%)`;
+    cursorEl.style.transform = `translate3d(${px}px, ${py}px, 0) translate(-50%, -50%)`;
     if (!cursorReady){
       cursorReady = true;
       cursorEl.classList.add('ready');
@@ -681,9 +681,9 @@ if (hasFinePointer){
     cursorRing.classList.add('ready');
   });
   (function ringTick(){
-    rx += (px - rx) * 0.18;
-    ry += (py - ry) * 0.18;
-    cursorRing.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+    rx += (px - rx) * 0.22;
+    ry += (py - ry) * 0.22;
+    cursorRing.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`;
     requestAnimationFrame(ringTick);
   })();
 
