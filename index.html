@@ -229,6 +229,46 @@ section.block{
 .project .plus::after{ width:1px; height:18px; transform:translate(-50%,-50%); transition: transform .4s }
 .project.open .plus::after{ transform: translate(-50%,-50%) rotate(90deg); opacity:0 }
 
+/* ——————————————— hover choreography — pure CSS, no cursor/JS involvement ——————————————— */
+@media (hover: hover) and (pointer: fine){
+  /* left-edge accent bar slides in from top */
+  .project::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:2px;
+    background: var(--accent);
+    transform: scaleY(0); transform-origin: top center;
+    transition: transform .75s cubic-bezier(.77,0,.18,1);
+    pointer-events: none;
+  }
+  .project:hover::before{ transform: scaleY(1) }
+
+  /* number: deepens to accent + widens tracking */
+  .project .num{ transition: color .4s, letter-spacing .5s cubic-bezier(.77,0,.18,1) }
+  .project:hover .num{ color: var(--accent); letter-spacing: .24em }
+
+  /* title gets a drawn underline in accent color */
+  .project .title{ position: relative; display: inline-block }
+  .project .title::after{
+    content:""; position:absolute; left:0; bottom:-6px; height:1px; width:100%;
+    background: var(--accent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .8s cubic-bezier(.77,0,.18,1);
+  }
+  .project:hover .title::after{ transform: scaleX(1) }
+
+  /* summary text darkens from soft-gray to ink */
+  .project .summary{ transition: color .45s }
+  .project:hover .summary{ color: var(--ink) }
+
+  /* award tag gets a little breathing room */
+  .project .award{ transition: letter-spacing .5s cubic-bezier(.77,0,.18,1) }
+  .project:hover .award{ letter-spacing: .26em }
+
+  /* the + icon rotates into an × (unless card is open — then existing open-state wins) */
+  .project .plus::before{ transition: transform .5s cubic-bezier(.77,0,.18,1) }
+  .project:not(.open):hover .plus::before{ transform: translate(-50%,-50%) rotate(45deg) }
+  .project:not(.open):hover .plus::after{ transform: translate(-50%,-50%) rotate(45deg) }
+}
+
 .toolkit{
   display:grid; grid-template-columns: repeat(3, 1fr); gap: 48px;
 }
