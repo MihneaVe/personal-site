@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>Mihnea-Andrei Velcea — Junior AI Engineer</title>
 <meta name="description" content="Portfolio of Mihnea-Andrei Velcea, Junior AI Engineer based in Bucharest. Agentic workflows, LLM observability, evaluation."/>
 <meta name="theme-color" content="#e8ebd9"/>
@@ -26,7 +26,16 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-feature-settings:"ss01","cv11";-webkit-font-smoothing:antialiased}
+html,body{
+  background:var(--bg);color:var(--ink);
+  font-family:'Instrument Sans',system-ui,sans-serif;
+  font-feature-settings:"ss01","cv11";-webkit-font-smoothing:antialiased;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar{
+  display:none; width:0; height:0; background:transparent;
+}
 body{overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 
@@ -62,11 +71,6 @@ a{color:inherit;text-decoration:none}
   mix-blend-mode:normal;
   opacity:1;color:var(--bg);font-size:9px;letter-spacing:.18em;
 }
-/* text state — thin vertical bar */
-.cursor.text{
-  width:2px;height:26px;border-radius:1px;
-  mix-blend-mode:multiply;opacity:.7;
-}
 .cursor-ring{
   position:fixed;left:0;top:0;pointer-events:none;z-index:200;
   width:36px;height:36px;border-radius:50%;
@@ -78,7 +82,6 @@ a{color:inherit;text-decoration:none}
 .cursor-ring.ready{ opacity:.55 }
 .cursor-ring.link{ width:84px;height:84px;border-color:var(--accent);opacity:.9 }
 .cursor-ring.project{ width:110px;height:110px;border-color:var(--ink);opacity:.3 }
-.cursor-ring.text{ opacity:0 }
 @media (hover: none), (pointer: coarse){
   .cursor, .cursor-ring{ display:none !important }
   *, *::before, *::after { cursor: auto !important }
@@ -328,8 +331,9 @@ footer{
   .progress-wrap{ display:none }
 }
 
-/* phone */
-@media (max-width: 640px){
+/* phone — also applies to any touch device so it kicks in even when a phone
+   browser reports a wider-than-expected CSS viewport (desktop-mode, etc.) */
+@media (max-width: 640px), (hover: none) and (pointer: coarse){
   .topbar{ padding: 18px 20px }
   .topbar nav{ display:none }
   .monogram{ font-size: 24px }
@@ -698,30 +702,29 @@ if (hasFinePointer){
     requestAnimationFrame(ringTick);
   })();
 
-  const MODES = ['link','project','text'];
-  function setMode(mode, label){
+  const MODES = ['link','project'];
+  // counts: how many elements of each mode we're currently inside (handles nested/overlapping hovers)
+  const modeCounts = { link: 0, project: 0 };
+  function refresh(){
+    const active = modeCounts.link > 0 ? 'link' : (modeCounts.project > 0 ? 'project' : null);
     MODES.forEach(m => {
-      cursorEl.classList.toggle(m, m === mode);
-      cursorRing.classList.toggle(m, m === mode);
+      cursorEl.classList.toggle(m, m === active);
+      cursorRing.classList.toggle(m, m === active);
     });
-    cursorEl.textContent = label || '';
+    cursorEl.textContent = active === 'link' ? '↗' : (active === 'project' ? 'Expand' : '');
   }
-  function clearMode(){ setMode(null, ''); }
-
-  const bindMode = (el, mode, label) => {
-    el.addEventListener('mouseenter', () => setMode(mode, label));
-    el.addEventListener('mouseleave', clearMode);
+  const bindMode = (el, mode) => {
+    el.addEventListener('mouseenter', () => { modeCounts[mode]++; refresh(); });
+    el.addEventListener('mouseleave', () => { modeCounts[mode] = Math.max(0, modeCounts[mode]-1); refresh(); });
   };
 
-  // links / nav / channel rows / interactive controls
-  document.querySelectorAll('a, button, input[type=checkbox], input[type=range]').forEach(el => bindMode(el, 'link', '↗'));
-  // project cards get a "click to expand" chip
-  document.querySelectorAll('.project').forEach(el => bindMode(el, 'project', 'Expand'));
-  // text bodies get an I-beam
-  document.querySelectorAll('p, .bio, .summary, .desc, li, .kv .v').forEach(el => bindMode(el, 'text', ''));
+  // interactive controls — link mode (wins over project mode via priority in refresh())
+  document.querySelectorAll('a, button, input[type=checkbox], input[type=range]').forEach(el => bindMode(el, 'link'));
+  // project cards — project mode
+  document.querySelectorAll('.project').forEach(el => bindMode(el, 'project'));
 
-  window.__bindCursorProject = (el) => bindMode(el, 'project', 'Expand');
-  window.__bindCursorLink = (el) => bindMode(el, 'link', '↗');
+  window.__bindCursorProject = (el) => bindMode(el, 'project');
+  window.__bindCursorLink = (el) => bindMode(el, 'link');
 }
 
 const orbWrap = document.getElementById('orbWrap');
