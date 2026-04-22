@@ -900,20 +900,42 @@ function renderProjects(){
       </div>
     </article>
   `).join('');
+  // gentle custom scroll — slow ease-in-out, only scrolls minimum distance needed
+  function gentleScrollTo(targetY, duration){
+    const startY = window.scrollY;
+    const delta = targetY - startY;
+    if (Math.abs(delta) < 8) return;
+    const t0 = performance.now();
+    const ease = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+    function step(now){
+      const t = Math.min(1, (now - t0) / duration);
+      window.scrollTo(0, startY + delta * ease(t));
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
   list.querySelectorAll('.project').forEach(el => {
     el.addEventListener('click', (e) => {
-      // prevent focus-induced scroll jumps
       if (e.currentTarget === e.target || !e.target.closest('a, button, input')) {
         e.preventDefault();
       }
       const wasOpen = el.classList.contains('open');
       el.classList.toggle('open');
       if (!wasOpen){
-        // keep the card's top in view after it expands — smooth, no jump
+        // only nudge if the card's top is actually off-screen or jammed against an edge;
+        // otherwise leave scroll alone — the user already sees what they clicked
         requestAnimationFrame(() => {
           const rect = el.getBoundingClientRect();
-          const target = window.scrollY + rect.top - 80;
-          window.scrollTo({ top: target, behavior: 'smooth' });
+          const vh = window.innerHeight;
+          if (rect.top < 40){
+            // card top scrolled past viewport top — float it back down gently
+            gentleScrollTo(window.scrollY + rect.top - 140, 900);
+          } else if (rect.top > vh * 0.7){
+            // card top in bottom 30% — a small lift so the expansion has room to breathe
+            gentleScrollTo(window.scrollY + rect.top - vh * 0.35, 1100);
+          }
+          // else: card is comfortably in view — don't scroll at all
         });
       }
     });
