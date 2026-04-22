@@ -32,7 +32,9 @@ html,body{
   font-feature-settings:"ss01","cv11";-webkit-font-smoothing:antialiased;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  overflow-anchor: none;
 }
+*{ overflow-anchor: none }
 html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar{
   display:none; width:0; height:0; background:transparent;
 }
@@ -738,37 +740,64 @@ document.addEventListener('mousemove', e => {
 });
 document.addEventListener('mouseleave', () => { cx = -9999; cy = -9999; });
 
-const letterState = Array.from(heroLetters).map(() => ({ox:0, oy:0, tx:0, ty:0, rot:0, trot:0}));
+const letterState = Array.from(heroLetters).map(() => ({ox:0, oy:0, tx:0, ty:0, rot:0, trot:0, cx:0, cy:0, w:0, h:0}));
+// cache letter baseline positions (in document coords) — recomputed on resize/scroll only, not every frame
+let heroBottom = 0;
+function measureLetters(){
+  heroLetters.forEach((el, i) => {
+    const r = el.getBoundingClientRect();
+    const s = letterState[i];
+    s.cx = r.left + r.width/2 + window.scrollX - s.ox;
+    s.cy = r.top + r.height/2 + window.scrollY - s.oy;
+    s.w = r.width;
+    s.h = r.height;
+  });
+  const hero = document.querySelector('.hero');
+  if (hero) heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
+}
+measureLetters();
+window.addEventListener('resize', measureLetters);
+window.addEventListener('load', measureLetters);
+
 function tick(){
   tx += (mx - tx) * 0.06;
   ty += (my - ty) * 0.06;
-  const scrollOffset = Math.min(1, window.scrollY / 600);
-  orbWrap.style.transform = `translate(calc(-50% + ${tx*30}px), calc(-50% + ${ty*24 - scrollOffset*80}px)) scale(${1 - scrollOffset*0.08})`;
-  orbWrap.style.opacity = 1 - scrollOffset*0.4;
+  const scrollY = window.scrollY;
+  const heroInView = scrollY < heroBottom;
 
-  const RADIUS = 180;
-  heroLetters.forEach((el, i) => {
-    const r = el.getBoundingClientRect();
-    const bx = r.left + r.width/2;
-    const by = r.top + r.height/2;
-    const dx = bx - cx;
-    const dy = by - cy;
-    const dist = Math.hypot(dx, dy);
-    const s = letterState[i];
-    if (dist < RADIUS && dist > 0){
-      const force = 1 - dist/RADIUS;
-      const f = force * force * 85;
-      s.tx = (dx/dist) * f;
-      s.ty = (dy/dist) * f;
-      s.trot = (dx/dist) * force * 14;
-    } else {
-      s.tx = 0; s.ty = 0; s.trot = 0;
-    }
-    s.ox += (s.tx - s.ox) * 0.18;
-    s.oy += (s.ty - s.oy) * 0.18;
-    s.rot += (s.trot - s.rot) * 0.18;
-    el.style.transform = `translate(${s.ox.toFixed(2)}px, ${s.oy.toFixed(2)}px) rotate(${s.rot.toFixed(2)}deg)`;
-  });
+  if (heroInView){
+    const scrollOffset = Math.min(1, scrollY / 600);
+    orbWrap.style.transform = `translate(calc(-50% + ${tx*30}px), calc(-50% + ${ty*24 - scrollOffset*80}px)) scale(${1 - scrollOffset*0.08})`;
+    orbWrap.style.opacity = 1 - scrollOffset*0.4;
+
+    const RADIUS = 180;
+    // cursor pos in document coords (matches cached letter centers)
+    const pcx = cx + scrollX;
+    const pcy = cy + scrollY;
+    heroLetters.forEach((el, i) => {
+      const s = letterState[i];
+      const dx = s.cx - pcx;
+      const dy = s.cy - pcy;
+      const dist = Math.hypot(dx, dy);
+      if (dist < RADIUS && dist > 0){
+        const force = 1 - dist/RADIUS;
+        const f = force * force * 85;
+        s.tx = (dx/dist) * f;
+        s.ty = (dy/dist) * f;
+        s.trot = (dx/dist) * force * 14;
+      } else {
+        s.tx = 0; s.ty = 0; s.trot = 0;
+      }
+      const prevOx = s.ox, prevOy = s.oy, prevRot = s.rot;
+      s.ox += (s.tx - s.ox) * 0.18;
+      s.oy += (s.ty - s.oy) * 0.18;
+      s.rot += (s.trot - s.rot) * 0.18;
+      // skip DOM write if effectively unchanged — avoids useless style invalidation
+      if (Math.abs(prevOx - s.ox) > 0.05 || Math.abs(prevOy - s.oy) > 0.05 || Math.abs(prevRot - s.rot) > 0.05){
+        el.style.transform = `translate(${s.ox.toFixed(2)}px, ${s.oy.toFixed(2)}px) rotate(${s.rot.toFixed(2)}deg)`;
+      }
+    });
+  }
 
   requestAnimationFrame(tick);
 }
